@@ -5,6 +5,7 @@ import Header from "../components/Header";
 import { useNavigate } from "react-router-dom";
 import PageLoader from "../components/PageLoader";
 import Nodata from "../components/Nodata";
+import { formatDateTime } from "../utils/helpers";
 
 const BlogManager = () => {
   const [blogs, setBlogs] = useState([]);
@@ -17,7 +18,7 @@ const BlogManager = () => {
   const [statusFilter, setStatusFilter] = useState("all");
   const [popUpMessage, setPopUpMessage] = useState("Do you want to delete this blog?");
   const [imageFilter, setImageFilter] = useState(false);
-  const [sort, setSort] = useState(-1)
+  const [sort, setSort] = useState(1)
 
 
   const navigate = useNavigate();
@@ -136,7 +137,7 @@ const BlogManager = () => {
             onChange={(e) => setSort(e.target.value)}
           >
             <option value={"all"}>Sort By</option>
-            {[{ key: -1, name: "Newest First" }, { key: 1, name: "Oldest First" }].map((elm) => (
+            {[{ key: 1, name: "From Start" }, { key: -1, name: "From End" }].map((elm) => (
               <option key={`sort-by-${String(elm.key)}`} className="p-1" value={elm.key}>
                 {elm.name}
               </option>
@@ -174,7 +175,7 @@ const BlogManager = () => {
             <th scope="col">Title</th>
             <th scope="col">Image</th>
             <th scope="col">Status</th>
-            <th scope="col">Date</th>
+            <th scope="col">Publish Date</th>
             <th scope="col">Actions</th>
           </tr>
         </thead>
@@ -194,7 +195,9 @@ const BlogManager = () => {
                   )}
                 </td>
                 <td>{blog.status}</td>
-                <td>{new Date(blog.createdAt).toLocaleDateString()}</td>
+                <td>
+                  {formatDateTime(blog?.publishedDate)}
+                </td>
                 <td>
                   <button
                     className={`btn mx-2 btn-sm ${blog.status !== "archived" ? "btn-danger" : "btn-warning"
