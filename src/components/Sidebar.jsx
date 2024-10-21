@@ -22,9 +22,8 @@ const Sidebar = () => {
             <Link
               to={tab.route}
               onClick={() => logout(tab.label === "Logout")}
-              className={`nav-link d-flex align-items-center ${
-                location.pathname === tab.route ? "bg-my-secondary " : ""
-              }`} // Conditionally add 'active' class
+              className={`nav-link d-flex align-items-center ${location.pathname === tab.route ? "bg-my-secondary " : ""
+                }`} // Conditionally add 'active' class
             >
               <i className={`me-2 ${tab.iconClass}`} />
               <span className="fw-bold">{tab.label}</span>
