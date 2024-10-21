@@ -23,25 +23,24 @@ const BlogManager = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const fetchBlogs = async () => {
+      try {
+        setIsLoading(true);
+        let params = { page: currentPage, limit: 15, status: statusFilter, sort: sort }
+        if (imageFilter) params['imageFilter'] = imageFilter
+
+        const response = await protectedAxios.get("/blogs", { params });
+        setBlogs(response?.data?.blogs || []);
+        setTotalPages(response?.data?.totalPages || 1);
+        setTotalBlogs(response?.data?.totalBlogs);
+      } catch (error) {
+        console.error("Error fetching blogs:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
     fetchBlogs();
   }, [currentPage, statusFilter, imageFilter, sort]);
-
-  const fetchBlogs = async () => {
-    try {
-      setIsLoading(true);
-      let params = { page: currentPage, limit: 15, status: statusFilter, sort: sort }
-      if (imageFilter) params['imageFilter'] = imageFilter
-
-      const response = await protectedAxios.get("/blogs", { params });
-      setBlogs(response?.data?.blogs || []);
-      setTotalPages(response?.data?.totalPages || 1);
-      setTotalBlogs(response?.data?.totalBlogs);
-    } catch (error) {
-      console.error("Error fetching blogs:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handleDelete = async () => {
     try {
@@ -50,7 +49,7 @@ const BlogManager = () => {
         await protectedAxios.put("/blogs/" + slug, { status: "draft" });
         setBlogs(
           blogs.map((E) => {
-            if (E._id == blogSelected) {
+            if (E._id === blogSelected) {
               E["status"] = "draft";
             }
             return E;
@@ -60,7 +59,7 @@ const BlogManager = () => {
         await protectedAxios.delete(`/blogs/${blogSelected}`);
         setBlogs(
           blogs.map((E) => {
-            if (E._id == blogSelected) {
+            if (E._id === blogSelected) {
               E["status"] = "archived";
             }
             return E;

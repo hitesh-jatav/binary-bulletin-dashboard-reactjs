@@ -9,7 +9,6 @@ const Profile = ({ edit = false }) => {
     email: "john.doe@example.com",
     phone: "123-456-7890",
     dateOfBirth: "1990-01-01",
-    role: "User",
     dateOfJoining: "2022-01-01",
     role: "Master Admin",
     duration: "4 months",
