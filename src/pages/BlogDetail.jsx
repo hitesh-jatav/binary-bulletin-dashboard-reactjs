@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import {
   fileUploadProtectedAxios,
@@ -21,7 +21,7 @@ const BlogDetail = () => {
   const [imgSrc, setImgSrc] = useState(null);
   const [category, setCategory] = useState("");
 
-  const getBlogDetails = async () => {
+  const getBlogDetails = useCallback(async () => {
     setIsLoading(true);
     try {
       const response = await protectedAxios.get("/blogs/" + slug);
@@ -30,7 +30,6 @@ const BlogDetail = () => {
       setTitle(response.data.title);
       setContent(response.data.content);
       setExcerpt(response.data.excerpt);
-      console.log(response.data.category);
       setCategory(response.data.category);
       setStatus(response.data.status);
     } catch (error) {
@@ -38,21 +37,15 @@ const BlogDetail = () => {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const capitalizeFirstCh = (s) => {
-    if (!s.trim()) return "";
-    return s[0].toUpperCase() + s.slice(1);
-  };
+  }, [slug]);
 
   const getCategories = async () => {
     setIsLoading(true);
     try {
       const response = await protectedAxios.get("/category");
-      console.log(response.data);
       setCategories(response.data);
     } catch (error) {
-      console.error("Error fetching blog details:", error);
+      console.error("Error fetching categories:", error);
     } finally {
       setIsLoading(false);
     }
@@ -101,47 +94,29 @@ const BlogDetail = () => {
   useEffect(() => {
     getBlogDetails();
     getCategories();
-  }, []);
+  }, [getBlogDetails]);
 
   return (
     <>
-      <div
-        className={`d-flex mb-2 ${
-          isLoading ? "justify-content-between" : "justify-content-end"
-        }`}
-      >
+      <div className={`d-flex mb-2 ${isLoading ? "justify-content-between" : "justify-content-end"}`}>
         {isLoading && <div>Loading..</div>}
-        {status === "published" && (
-          <button className="btn btn-danger">People might read this!</button>
-        )}
-        {status === "draft" && (
-          <button className="btn btn-warning">
-            People are waiting to read!
-          </button>
-        )}
-        {status === "archived" && (
-          <button className="btn btn-secondary">
-            People might not read this!
-          </button>
-        )}
+        {status === "published" && <button className="btn btn-danger">People might read this!</button>}
+        {status === "draft" && <button className="btn btn-warning">People are waiting to read!</button>}
+        {status === "archived" && <button className="btn btn-secondary">People might not read this!</button>}
       </div>
       {!isLoading && info && (
         <div className="row mb-20 pb-20">
           <div className="col-md-8 col-sm-12">
-            <div dangerouslySetInnerHTML={{ __html: info.content }}></div>
+            <div dangerouslySetInnerHTML={{ __html: content }}></div>
           </div>
 
-          <div className="col-md-4 col-lg-4  border col-sm-12 bg-grey">
-            <div
-              className={`btn btn-warning ${isUploading ? "" : "invisible"}`}
-            >
-              Updating Information....
-            </div>
+          <div className="col-md-4 col-lg-4 border col-sm-12 bg-grey">
+            <div className={`btn btn-warning ${isUploading ? "" : "invisible"}`}>Updating Information....</div>
 
             <div className="profile-image-container">
               <img
                 src={imgSrc || noImge}
-                alt="Blog Image"
+                alt="" // Removed redundant wording
                 className="img-fluid rounded-3"
                 style={{
                   objectFit: "cover",
@@ -176,29 +151,25 @@ const BlogDetail = () => {
                 {isUploading ? "UPLOADING..." : "UPLOAD"}
               </label>
             </div>
-            <label className="mt-2">title</label>
+            <label className="mt-2">Title</label>
             <input
               type="text"
               value={title}
               className="form-control mb-10"
               onChange={(e) => setTitle(e.target.value)}
-              onBlur={(e) => {
-                patchBlogDetail({ title: e.target.value });
-              }}
+              onBlur={(e) => patchBlogDetail({ title: e.target.value })}
             />
-            <label className="mt-2">excerpt</label>
+            <label className="mt-2">Excerpt</label>
             <input
               type="text"
               value={excerpt}
               className="form-control mb-10"
               onChange={(e) => setExcerpt(e.target.value)}
-              onBlur={(e) => {
-                patchBlogDetail({ excerpt: e.target.value });
-              }}
+              onBlur={(e) => patchBlogDetail({ excerpt: e.target.value })}
             />
             <label className="mt-2">Status</label>
             <select
-              className="form-select "
+              className="form-select"
               value={status}
               onChange={(e) => {
                 setStatus(e.target.value);
@@ -207,7 +178,7 @@ const BlogDetail = () => {
             >
               {["published", "draft", "archived"].map((statusElm) => (
                 <option value={statusElm} className="p-1" key={statusElm}>
-                  {capitalizeFirstCh(statusElm)}
+                  {statusElm.charAt(0).toUpperCase() + statusElm.slice(1)}
                 </option>
               ))}
             </select>
@@ -224,9 +195,9 @@ const BlogDetail = () => {
                 });
               }}
               onRemoved={(id) => {
-                setCategory(category.filter((e) => e != id));
+                setCategory(category.filter((e) => e !== id));
                 patchBlogDetail({
-                  category: category.filter((e) => e != id),
+                  category: category.filter((e) => e !== id),
                 });
               }}
             />

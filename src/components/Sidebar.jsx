@@ -1,8 +1,6 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import TABS from "../constants/tabs";
-import logoNam from "../assets/images/brandname.png";
-import logo from "../assets/images/logo.png";
 
 const Sidebar = () => {
   const location = useLocation(); // Get the current route

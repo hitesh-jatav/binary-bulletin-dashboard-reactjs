@@ -6,18 +6,16 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import { Route, Routes } from "react-router-dom";
 
-import Header from "./components/Header";
 import Footer from "./components/Footer";
 import { useEffect, useState } from "react";
 import Login from "./pages/Login";
 import { protectedAxios } from "./utils/axiosInstances";
 
 const App = () => {
-  const token = localStorage.getItem("token");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const verifyUserSession = async () => {
     try {
-      const response = await protectedAxios.post("/auth/check-user-session", {
+      await protectedAxios.post("/auth/check-user-session", {
         token: localStorage.getItem("token"),
       });
       setIsLoggedIn(true);

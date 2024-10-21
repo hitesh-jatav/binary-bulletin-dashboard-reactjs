@@ -1,5 +1,5 @@
 import React from "react";
-import { Dropdown, DropdownButton, Button } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 
 const CustomMultiSelect = ({
   options,
