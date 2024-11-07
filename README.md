@@ -1,1 +1,1 @@
-https://binary-bulleting-dashboard.netlify.app/
+https://bulletin-admin.netlify.app/
