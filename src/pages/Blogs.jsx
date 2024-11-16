@@ -19,6 +19,7 @@ const BlogManager = () => {
   const [popUpMessage, setPopUpMessage] = useState("Do you want to delete this blog?");
   const [imageFilter, setImageFilter] = useState(false);
   const [sort, setSort] = useState(1)
+  const [devMode, setdevMode] = useState(false)
 
 
   const navigate = useNavigate();
@@ -27,7 +28,7 @@ const BlogManager = () => {
     const fetchBlogs = async () => {
       try {
         setIsLoading(true);
-        let params = { page: currentPage, limit: 15, status: statusFilter, sort: sort }
+        let params = { page: currentPage, limit: 15, status: statusFilter, sort: sort, devMode: devMode }
         if (imageFilter) params['imageFilter'] = imageFilter
 
         const response = await protectedAxios.get("/blogs", { params });
@@ -41,7 +42,7 @@ const BlogManager = () => {
       }
     };
     fetchBlogs();
-  }, [currentPage, statusFilter, imageFilter, sort]);
+  }, [currentPage, statusFilter, imageFilter, sort, devMode]);
 
   const handleDelete = async () => {
     try {
@@ -128,7 +129,15 @@ const BlogManager = () => {
     <div className="border mb-50">
       <div className="d-flex justify-content-between align-items-center">
         <Header titleSupport={`(${totalBlogs})`} />
-        <div className="px-4 d-flex">
+
+
+        <div className="px-4 d-flex align-items-center">
+          <div className="form-check form-switch">
+            <input className="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked={devMode}
+              onChange={(e) => setdevMode(e.target.checked)} />
+            <label className="form-check-label" for="flexSwitchCheckChecked">BloggerMode</label>
+          </div>
+
 
           <select
             className="form-select mx-2"
